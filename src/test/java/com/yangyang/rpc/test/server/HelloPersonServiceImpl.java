@@ -7,7 +7,7 @@ import com.yangyang.rpc.server.RpcService;
 import com.yangyang.rpc.test.client.HelloPersonService;
 import com.yangyang.rpc.test.client.Person;
 
- //@RpcService(HelloPersonService.class)
+ @RpcService(HelloPersonService.class)
 public class HelloPersonServiceImpl implements HelloPersonService{
 
 	@Override

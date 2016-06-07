@@ -28,12 +28,12 @@ public class ServiceRegistry {
 		 this.registryAddress = registryAddress;
 	 }
 	 
-	 public void register(String data){
+	 public void register(String data, Map<String, Object> handlerMap){
 		 if (data != null) {
 			ZooKeeper zk = connectZookeeper();
 			 if (zk != null) {
 				 addRootNode(zk); // Add root node if not exist
-	             createNode(zk, data);
+	             createNode(zk, data,handlerMap);
 	         }
 		}
 	 }
@@ -53,12 +53,20 @@ public class ServiceRegistry {
 		}
 	}
 
-	private void createNode(ZooKeeper zk, String data) {
+	private void createNode(ZooKeeper zk, String data, Map<String, Object> handlerMap) {
 		byte[] bytes = data.getBytes();
 		try {
-			//会话结束时节点会自动删除，OPEN_ACL_UNSAFE开放所有权限
-			String path = zk.create(Constant.ZK_DATA_PATH, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-			LOGGER.debug("create zookeeper node ({} => {})", path, data);
+			for (String interfaceName :handlerMap.keySet()) {
+				if (interfaceName == null || interfaceName.equals("")) {
+					continue;
+				}
+				//会话结束时节点会自动删除，OPEN_ACL_UNSAFE开放所有权限
+				String path = zk.create(Constant.ZK_REGISTRY_PATH+"/"+interfaceName, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+				LOGGER.debug("create zookeeper node ({} => {})", path, data);
+			}
+//			//会话结束时节点会自动删除，OPEN_ACL_UNSAFE开放所有权限
+//			String path = zk.create(Constant.ZK_DATA_PATH, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+//			LOGGER.debug("create zookeeper node ({} => {})", path, data);
 		} catch (KeeperException e) {
 			LOGGER.error("",e);
 			e.printStackTrace();
