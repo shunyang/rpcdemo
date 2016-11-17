@@ -4,7 +4,9 @@
 .idea/
 *.iml
 logs/
-target/
+*/target
+*/*.iml
+*/*/target
 .settings
 release/
 .DS_Store
